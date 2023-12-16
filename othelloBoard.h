@@ -1,4 +1,7 @@
 // othelloBoard.h
+#ifndef OTHELLO_BOARD_H
+#define OTHELLO_BOARD_H
+
 #include <iostream>
 #include <vector>
 
@@ -15,11 +18,16 @@ public:
     OthelloBoard();
     OthelloBoard(int board[OTHELLO_BOARD_SIZE][OTHELLO_BOARD_SIZE]);
     void displayBoard();
+    int getElement(int row, int col);
+    void setElement(int row, int col, int piece);
     OthelloBoard *makeMove(int row, int col, int piece);
-    std::vector<int> getScores();
+    std::pair<int, int> getScores();
     void playGame();
 
 private:
     int array[OTHELLO_BOARD_SIZE][OTHELLO_BOARD_SIZE];
-    std::vector<Move> legalMoves(int color);
+    std::vector<Move> legalMoves(int player);
+    bool checkAndFlip(int row, int col, int piece);
 };
+
+#endif // OTHELLO_BOARD_H
