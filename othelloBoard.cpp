@@ -103,13 +103,12 @@ OthelloBoard *OthelloBoard::makeMove(int row, int col, int piece)
     // Make a copy of the board
     OthelloBoard *copyBoard = new OthelloBoard(array);
     copyBoard->array[row][col] = piece;
-    copyBoard->displayBoard();
 
     bool flipped = copyBoard->checkAndFlip(row, col, piece);
 
     if (flipped)
     {
-        copyBoard->displayBoard();
+        // copyBoard->displayBoard();
         return copyBoard;
     }
 
@@ -137,11 +136,11 @@ bool OthelloBoard::checkAndFlip(int row, int col, int piece)
 
                 if (curSquare.first < 0 || curSquare.first >= OTHELLO_BOARD_SIZE || curSquare.second < 0 || curSquare.second >= OTHELLO_BOARD_SIZE)
                 {
+                    // if out of bounds
                     count = 0;
                     break;
                 }
-
-                if (array[curSquare.first][curSquare.second] == -1 * piece)
+                else if (array[curSquare.first][curSquare.second] == -1 * piece)
                 {
                     count += 1;
                 }
@@ -149,25 +148,25 @@ bool OthelloBoard::checkAndFlip(int row, int col, int piece)
                 {
                     break;
                 }
-                else
+                else // if empty
                 {
                     count = 0;
                     break;
                 }
+            }
 
-                if (count > 0)
-                {
-                    flipped = true;
-                }
+            if (count > 0)
+            {
+                flipped = true;
+            }
 
-                // actually record the flips
-                curSquare = std::make_pair(row, col);
-                for (int k = 0; k < count; k++)
-                {
-                    curSquare.first = curSquare.first + i;
-                    curSquare.second = curSquare.second + j;
-                    array[curSquare.first][curSquare.second] = piece;
-                }
+            // actually record the flips
+            curSquare = std::make_pair(row, col);
+            for (int k = 0; k < count; k++)
+            {
+                curSquare.first = curSquare.first + i;
+                curSquare.second = curSquare.second + j;
+                array[curSquare.first][curSquare.second] = piece;
             }
         }
     }

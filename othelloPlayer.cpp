@@ -39,7 +39,6 @@ Move HumanPlayer::chooseMove(OthelloBoard *board)
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-        std::cout << "You entered: " << moveRow << ", " << moveCol << std::endl;
     }
 
     return std::make_pair(moveRow, moveCol);
