@@ -44,3 +44,29 @@ Move HumanPlayer::chooseMove(OthelloBoard *board)
 
     return std::make_pair(moveRow, moveCol);
 }
+
+ComputerPlayer::ComputerPlayer(std::string playerName, int playerColor)
+{
+    name = playerName;
+    color = playerColor;
+}
+
+Move ComputerPlayer::chooseMove(OthelloBoard *board)
+{
+    std::vector<Move> moves = board->legalMoves(color);
+
+    // Check if there are any legal moves
+    if (moves.empty())
+    {
+        // Handle the case where there are no legal moves
+        return std::make_pair(-1, -1); // or some other indication that no move is available
+    }
+
+    // Generate a random index within the range of valid moves
+    int randomIndex = rand() % moves.size();
+
+    // Retrieve the randomly chosen move
+    Move randomMove = moves[randomIndex];
+
+    return randomMove;
+}

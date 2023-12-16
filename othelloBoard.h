@@ -21,12 +21,12 @@ public:
     int getElement(int row, int col);
     void setElement(int row, int col, int piece);
     OthelloBoard *makeMove(int row, int col, int piece);
+    std::vector<Move> legalMoves(int player);
     std::pair<int, int> getScores();
     void playGame();
 
 private:
     int array[OTHELLO_BOARD_SIZE][OTHELLO_BOARD_SIZE];
-    std::vector<Move> legalMoves(int player);
     bool checkAndFlip(int row, int col, int piece);
 };
 

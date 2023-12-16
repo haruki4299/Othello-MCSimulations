@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <cstdlib>
 
 #include "othelloBoard.h"
 
@@ -23,7 +24,7 @@ class ComputerPlayer
 {
 public:
     ComputerPlayer(std::string name, int color);
-    void chooseMove(OthelloBoard *board);
+    Move chooseMove(OthelloBoard *board);
 
 private:
     std::string name;
