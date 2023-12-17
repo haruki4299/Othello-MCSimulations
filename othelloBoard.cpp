@@ -68,7 +68,7 @@ void OthelloBoard::setElement(int row, int col, int piece)
     array[row][col] = piece;
 }
 
-std::pair<int, int> OthelloBoard::getScores()
+Score OthelloBoard::getScores()
 {
     int blackScore = 0;
     int whiteScore = 0;

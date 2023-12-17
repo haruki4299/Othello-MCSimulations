@@ -7,6 +7,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <algorithm>
+#include <thread>
 
 #include "othelloBoard.h"
 
@@ -27,6 +28,7 @@ public:
     ComputerPlayer(std::string name, int color);
     Move chooseMove(OthelloBoard *board);
     Move selectRandomMove(OthelloBoard *board);
+    int getColor();
 
 private:
     std::string name;

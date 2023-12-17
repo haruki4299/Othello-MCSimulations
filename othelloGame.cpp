@@ -7,7 +7,7 @@ int main()
 
     OthelloBoard *defaultBoard = new OthelloBoard();
     defaultBoard->displayBoard();
-    Move score = defaultBoard->getScores();
+    Score score = defaultBoard->getScores();
     std::cout << "Score   Black: " << score.first << " White: " << score.second << std::endl;
 
     HumanPlayer player1 = HumanPlayer("ABC", OTHELLO_BLACK);

@@ -11,6 +11,7 @@ const int OTHELLO_BLACK = -1;
 const int OTHELLO_EMPTY = 0;
 
 typedef std::pair<int, int> Move;
+typedef std::pair<int, int> Score;
 
 class OthelloBoard
 {
@@ -22,7 +23,7 @@ public:
     void setElement(int row, int col, int piece);
     OthelloBoard *makeMove(int row, int col, int piece);
     std::vector<Move> legalMoves(int player);
-    std::pair<int, int> getScores();
+    Score getScores();
     void playGame();
 
 private:
