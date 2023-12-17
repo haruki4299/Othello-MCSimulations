@@ -26,11 +26,11 @@ class ComputerPlayer
 public:
     ComputerPlayer(std::string name, int color);
     Move chooseMove(OthelloBoard *board);
+    Move selectRandomMove(OthelloBoard *board);
 
 private:
     std::string name;
     int color;
-    int simulate(OthelloBoard *board, int turn);
 };
 
 #endif // OTHELLO_PLAYER_H

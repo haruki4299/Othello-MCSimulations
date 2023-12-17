@@ -87,6 +87,12 @@ ComputerPlayer::ComputerPlayer(std::string playerName, int playerColor)
 
 Move ComputerPlayer::chooseMove(OthelloBoard *board)
 {
+    Move move = selectRandomMove(board);
+    return move;
+}
+
+Move ComputerPlayer::selectRandomMove(OthelloBoard *board)
+{
     std::vector<Move> moves = board->legalMoves(color);
 
     // Check if there are any legal moves
