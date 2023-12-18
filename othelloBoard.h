@@ -5,13 +5,14 @@
 #include <iostream>
 #include <vector>
 
+// Basic Constants
 const int OTHELLO_BOARD_SIZE = 8;
-const int OTHELLO_WHITE = 1;
-const int OTHELLO_BLACK = -1;
-const int OTHELLO_EMPTY = 0;
+const int OTHELLO_WHITE = 1;  // Represents white on the board
+const int OTHELLO_BLACK = -1; // Represents black on the board
+const int OTHELLO_EMPTY = 0;  // Represents an empty square on the board
 
-typedef std::pair<int, int> Move;
-typedef std::pair<int, int> Score;
+typedef std::pair<int, int> Move;  // var for move
+typedef std::pair<int, int> Score; // (black score, white score)
 
 class OthelloBoard
 {
@@ -27,7 +28,7 @@ public:
     void playGame();
 
 private:
-    int array[OTHELLO_BOARD_SIZE][OTHELLO_BOARD_SIZE];
+    int array[OTHELLO_BOARD_SIZE][OTHELLO_BOARD_SIZE]; // Array representing an 8x8 othello board
     bool checkAndFlip(int row, int col, int piece);
 };
 

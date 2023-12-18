@@ -27,6 +27,7 @@ OthelloBoard::OthelloBoard(int board[OTHELLO_BOARD_SIZE][OTHELLO_BOARD_SIZE])
     }
 }
 
+// Display the current board in text format
 void OthelloBoard::displayBoard()
 {
     std::cout << "  ";
@@ -43,14 +44,17 @@ void OthelloBoard::displayBoard()
         {
             if (array[i][j] == OTHELLO_WHITE)
             {
+                // White piece
                 std::cout << 'W' << ' ';
             }
             else if (array[i][j] == OTHELLO_BLACK)
             {
+                // Black piece
                 std::cout << 'B' << ' ';
             }
             else
             {
+                // Empty square
                 std::cout << '-' << ' ';
             }
         }
@@ -68,6 +72,7 @@ void OthelloBoard::setElement(int row, int col, int piece)
     array[row][col] = piece;
 }
 
+// Get the current score on the board
 Score OthelloBoard::getScores()
 {
     int blackScore = 0;
@@ -79,10 +84,12 @@ Score OthelloBoard::getScores()
         {
             if (array[i][j] == OTHELLO_WHITE)
             {
+                // Found white piece
                 whiteScore++;
             }
             else if (array[i][j] == OTHELLO_BLACK)
             {
+                // Found black piece
                 blackScore++;
             }
         }
@@ -91,6 +98,7 @@ Score OthelloBoard::getScores()
     return std::make_pair(blackScore, whiteScore);
 }
 
+// Make the move on the othello board
 OthelloBoard *OthelloBoard::makeMove(int row, int col, int piece)
 {
     // A move cannot be made if a piece is already there.
@@ -104,21 +112,26 @@ OthelloBoard *OthelloBoard::makeMove(int row, int col, int piece)
     OthelloBoard *copyBoard = new OthelloBoard(array);
     copyBoard->array[row][col] = piece;
 
+    // checkAndFlip flips pieces based on the move. If there are no flipped pieces, the move is not valid.
     bool flipped = copyBoard->checkAndFlip(row, col, piece);
 
     if (flipped)
     {
-        // copyBoard->displayBoard();
+        // Valid Move
         return copyBoard;
     }
 
     return NULL;
 }
 
+// Makes the move on the board and flips the appropriate pieces.
+// If pieces are flipped as a result it is a valid move.
+// If not the move is not valid.
 bool OthelloBoard::checkAndFlip(int row, int col, int piece)
 {
     bool flipped = false;
 
+    // For each directional vector on the board (including diagonal)
     for (int i = -1; i <= 1; i++)
     {
         for (int j = -1; j <= 1; j++)
@@ -129,6 +142,9 @@ bool OthelloBoard::checkAndFlip(int row, int col, int piece)
             int count = 0;
             std::pair<int, int> curSquare = std::make_pair(row, col);
 
+            // See if a flip is possible in this direction
+            // To flip we need a piece of the same color in the direction as the newly placed piece
+            // and at least one opposition piece in between
             while (true)
             {
                 curSquare.first = curSquare.first + i;
@@ -160,7 +176,7 @@ bool OthelloBoard::checkAndFlip(int row, int col, int piece)
                 flipped = true;
             }
 
-            // actually record the flips
+            // Actually record the flips
             curSquare = std::make_pair(row, col);
             for (int k = 0; k < count; k++)
             {
@@ -174,6 +190,7 @@ bool OthelloBoard::checkAndFlip(int row, int col, int piece)
     return flipped;
 }
 
+// Makes a vector list of all of the legal Moves on the board for the player
 std::vector<Move> OthelloBoard::legalMoves(int player)
 {
     std::vector<Move> moves;

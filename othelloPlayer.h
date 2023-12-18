@@ -26,7 +26,7 @@ class ComputerPlayer
 {
 public:
     ComputerPlayer(std::string name, int color);
-    Move chooseMove(OthelloBoard *board);
+    Move chooseMove(OthelloBoard *board, int nThreads, int nSimulations);
     Move selectRandomMove(OthelloBoard *board);
     int getColor();
 

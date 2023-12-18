@@ -6,6 +6,7 @@ HumanPlayer::HumanPlayer(std::string playerName, int playerColor)
     color = playerColor;
 }
 
+// Asks the human player for a move on the board and if legal makes the move. If not asks again.
 Move HumanPlayer::chooseMove(OthelloBoard *board)
 {
     // First check if there are any legal moves
@@ -31,6 +32,8 @@ Move HumanPlayer::chooseMove(OthelloBoard *board)
     int moveRow;
     int moveCol;
     bool validInput = false;
+
+    // Keep asking until valid input
     while (!validInput)
     {
         std::string userInput;
@@ -43,12 +46,14 @@ Move HumanPlayer::chooseMove(OthelloBoard *board)
 
         if (ss >> moveRow >> comma >> moveCol && comma == ',')
         {
-            if (moveRow >= 1 && moveRow <= 8 && moveCol >= 1 && moveCol <= 8)
+            if (moveRow >= 1 && moveRow <= OTHELLO_BOARD_SIZE && moveCol >= 1 && moveCol <= OTHELLO_BOARD_SIZE)
             {
+                // Move is within board bounds
                 userMove = std::make_pair(moveRow - 1, moveCol - 1);
                 auto it = std::find(moves.begin(), moves.end(), userMove);
                 if (it != moves.end())
                 {
+                    // The move exists within the possible moves
                     validInput = true;
                 }
                 else
@@ -90,6 +95,8 @@ int ComputerPlayer::getColor()
     return color;
 }
 
+// Simulate the game from the board. The simulation always starts from the sim player.
+// OrigPlayer represents the CPU which is trying to make the current move.
 int simulateToEnd(OthelloBoard *board, ComputerPlayer *origPlayer, ComputerPlayer *simPlayer)
 {
     OthelloBoard *copy;
@@ -97,6 +104,7 @@ int simulateToEnd(OthelloBoard *board, ComputerPlayer *origPlayer, ComputerPlaye
     Score score;
     int passes = 0;
 
+    // Simulate a game with all random moves till the end
     while (passes < 2)
     {
         move = simPlayer->selectRandomMove(board);
@@ -107,7 +115,7 @@ int simulateToEnd(OthelloBoard *board, ComputerPlayer *origPlayer, ComputerPlaye
         }
         else
         {
-            copy = board->makeMove(move.first, move.second, OTHELLO_BLACK);
+            copy = board->makeMove(move.first, move.second, simPlayer->getColor());
             if (board != NULL)
                 delete board;
             board = copy;
@@ -125,14 +133,15 @@ int simulateToEnd(OthelloBoard *board, ComputerPlayer *origPlayer, ComputerPlaye
         }
         else
         {
-            copy = board->makeMove(move.first, move.second, OTHELLO_WHITE);
+            copy = board->makeMove(move.first, move.second, origPlayer->getColor());
             if (board != NULL)
                 delete board;
             board = copy;
         }
     }
+
+    // Find the results of the game
     score = board->getScores();
-    // std::cout << "Score   Black: " << score.first << " White: " << score.second << std::endl;
     int res;
     if (score.first > score.second)
     {
@@ -149,23 +158,40 @@ int simulateToEnd(OthelloBoard *board, ComputerPlayer *origPlayer, ComputerPlaye
     return res;
 }
 
+// Worker Function for parallelization
 void workerFunction(int threadID, Move move, int start, int end, OthelloBoard *board, ComputerPlayer *origPlayer, ComputerPlayer *simPlayer, std::vector<int> &results)
 {
     OthelloBoard *copy;
-    int res;
+
+    // Each thread has a pre determined amount of work
     for (int i = start; i <= end; i++)
     {
+        // Make the move in question and start the simulation
         copy = board->makeMove(move.first, move.second, origPlayer->getColor());
         results[threadID] += simulateToEnd(copy, origPlayer, simPlayer);
     }
 }
 
-Move ComputerPlayer::chooseMove(OthelloBoard *board)
+// Choose move function for the computer player.
+// if nSimulations is 0, the computer player makes a random move from the possible
+// Else, the computer player does n Simulations on each possible move. The move with
+// the best results from these simulations is chosen as the best possible move.
+Move ComputerPlayer::chooseMove(OthelloBoard *board, int nThreads, int nSimulations)
 {
-    int nThreads = 2;
-    int nSimulations = 100;
+    // If the number of simulations is 0 then just do a random move selection
+    if (nSimulations == 0)
+    {
+        return selectRandomMove(board);
+    }
 
     std::vector<Move> moves = board->legalMoves(color);
+
+    // Check if there are any legal moves
+    if (moves.empty())
+    {
+        // Handle the case where there are no legal moves
+        return std::make_pair(-1, -1); // or some other indication that no move is available
+    }
 
     // Create simulation opponenet
     ComputerPlayer *simPlayer = new ComputerPlayer("BOT", color * -1);
@@ -199,7 +225,6 @@ Move ComputerPlayer::chooseMove(OthelloBoard *board)
             moveResults[index] += results[i];
         }
         moveResults[index] *= color;
-        std::cout << "Move Results" << index << " Value: " << moveResults[index] << std::endl;
     }
 
     delete simPlayer;
@@ -215,12 +240,12 @@ Move ComputerPlayer::chooseMove(OthelloBoard *board)
             maxVal = moveResults[i];
         }
     }
-    std::cout << "maxIndex: " << maxIndex << std::endl;
 
     Move move = moves[maxIndex];
     return move;
 }
 
+// Computer Player selects a random move from possible moves
 Move ComputerPlayer::selectRandomMove(OthelloBoard *board)
 {
     std::vector<Move> moves = board->legalMoves(color);
@@ -229,7 +254,7 @@ Move ComputerPlayer::selectRandomMove(OthelloBoard *board)
     if (moves.empty())
     {
         // Handle the case where there are no legal moves
-        return std::make_pair(-1, -1); // or some other indication that no move is available
+        return std::make_pair(-1, -1);
     }
 
     // Generate a random index within the range of valid moves
