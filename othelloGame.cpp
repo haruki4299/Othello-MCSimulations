@@ -1,5 +1,5 @@
-#include "othelloBoard.h"
-#include "othelloPlayer.h"
+#include "src/othelloBoard.h"
+#include "src/othelloPlayer.h"
 
 // Mode for Human (Black) vs. Computer (White)
 void hvc(int nThreads, int nSimulations)
