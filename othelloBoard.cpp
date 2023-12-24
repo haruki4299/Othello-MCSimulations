@@ -1,4 +1,4 @@
-#include "othelloBoard.h"
+#include "src/othelloBoard.h"
 
 OthelloBoard::OthelloBoard()
 {

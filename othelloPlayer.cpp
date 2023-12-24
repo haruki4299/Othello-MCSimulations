@@ -1,4 +1,4 @@
-#include "othelloPlayer.h"
+#include "src/othelloPlayer.h"
 
 HumanPlayer::HumanPlayer(std::string playerName, int playerColor)
 {
