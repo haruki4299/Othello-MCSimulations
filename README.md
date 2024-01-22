@@ -8,6 +8,10 @@ In this project, I implemented a text base othello game using C++. The execution
 
 The goal of this project is to learn C++ and implement parallelism. The program supports a human playing against a computer player. When deciding how the computer player decides the next move one of the ideas I had that aligns with multithreading was the monte carlo tree search. However, a strict MCTS would not be easily implemented concurrently. In this project, for each possible move, the computer player would run independent simulations from that move and find the move that has the best result. During the simulation, the next move was chosen randomly out of all possible moves. The idea is that the best move will lead to better positions and overall the best move will have better oveall results in the simulation. To run mass simulations effeciently, the simulation was done in parallel with multiple threads. Once this was implemented, I conducted a short experiment to figure out whether this method of simulating the outcome of a game was effective in choosing a better next move.
 
+### To DO
+
+Change Implementation to c++20 compatible.
+
 ## How to
 
 Compile the code using C++11
