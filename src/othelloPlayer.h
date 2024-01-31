@@ -7,6 +7,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <algorithm>
+#include <format>
 #include <thread>
 
 #include "othelloBoard.h"

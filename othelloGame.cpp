@@ -11,14 +11,14 @@ void hvc(int nThreads, int nSimulations)
 
     // Get user name
     string name;
-    cout << "Enter Name: ";
+    cout << format("Enter Name: ");
     cin >> name;
 
     // Set up initial board
     OthelloBoard *defaultBoard = new OthelloBoard();
     defaultBoard->displayBoard();
     Score score = defaultBoard->getScores();
-    cout << "Score   Black: " << score.first << " White: " << score.second << endl;
+    cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
 
     // Create both players
     HumanPlayer player1 = HumanPlayer(name, OTHELLO_BLACK);
@@ -45,7 +45,7 @@ void hvc(int nThreads, int nSimulations)
             defaultBoard = copy;
             defaultBoard->displayBoard();
             score = defaultBoard->getScores();
-            cout << "Score   Black: " << score.first << " White: " << score.second << endl;
+            cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
         }
 
         if (passes == 2)
@@ -65,12 +65,12 @@ void hvc(int nThreads, int nSimulations)
         {
             // Make the move
             copy = defaultBoard->makeMove(move.first, move.second, OTHELLO_WHITE);
-            cout << "Computer chooses:" << move.first + 1 << ',' << move.second + 1 << endl;
+            cout << format("Computer chooses: {}, {}\n", move.first + 1, move.second + 1);
             delete defaultBoard;
             defaultBoard = copy;
             defaultBoard->displayBoard();
             score = defaultBoard->getScores();
-            cout << "Score   Black: " << score.first << " White: " << score.second << endl;
+            cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
         }
     }
 
@@ -91,7 +91,7 @@ void cvh(int nThreads, int nSimulations)
     OthelloBoard *defaultBoard = new OthelloBoard();
     defaultBoard->displayBoard();
     Score score = defaultBoard->getScores();
-    cout << "Score   Black: " << score.first << " White: " << score.second << endl;
+    cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
 
     // Create both players
     ComputerPlayer player1 = ComputerPlayer("CPU", OTHELLO_BLACK);
@@ -113,12 +113,12 @@ void cvh(int nThreads, int nSimulations)
         {
             // Make the move
             copy = defaultBoard->makeMove(move.first, move.second, OTHELLO_BLACK);
-            cout << "Computer chooses:" << move.first + 1 << ',' << move.second + 1 << endl;
+            cout << format("Computer chooses: {}, {}\n", move.first + 1, move.second + 1);
             delete defaultBoard;
             defaultBoard = copy;
             defaultBoard->displayBoard();
             score = defaultBoard->getScores();
-            cout << "Score   Black: " << score.first << " White: " << score.second << endl;
+            cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
         }
 
         if (passes == 2)
@@ -142,7 +142,7 @@ void cvh(int nThreads, int nSimulations)
             defaultBoard = copy;
             defaultBoard->displayBoard();
             score = defaultBoard->getScores();
-            cout << "Score   Black: " << score.first << " White: " << score.second << endl;
+            cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
         }
     }
 
@@ -158,7 +158,7 @@ void cvc(int nThreadsC1, int nSimulationsC1, int nThreadsC2, int nSimulationsC2)
     OthelloBoard *defaultBoard = new OthelloBoard();
     defaultBoard->displayBoard();
     Score score = defaultBoard->getScores();
-    cout << "Score   Black: " << score.first << " White: " << score.second << endl;
+    cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
 
     // Create both players
     ComputerPlayer player1 = ComputerPlayer("CPU1", OTHELLO_BLACK);
@@ -181,12 +181,12 @@ void cvc(int nThreadsC1, int nSimulationsC1, int nThreadsC2, int nSimulationsC2)
         {
             // Make the move
             copy = defaultBoard->makeMove(move.first, move.second, OTHELLO_BLACK);
-            cout << "Computer chooses:" << move.first + 1 << ',' << move.second + 1 << endl;
+            cout << format("Computer chooses: {}, {}\n", move.first + 1, move.second + 1);
             delete defaultBoard;
             defaultBoard = copy;
             defaultBoard->displayBoard();
             score = defaultBoard->getScores();
-            cout << "Score   Black: " << score.first << " White: " << score.second << endl;
+            cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
         }
 
         if (passes == 2)
@@ -205,16 +205,16 @@ void cvc(int nThreadsC1, int nSimulationsC1, int nThreadsC2, int nSimulationsC2)
         {
             // Make the move
             copy = defaultBoard->makeMove(move.first, move.second, OTHELLO_WHITE);
-            cout << "Computer chooses:" << move.first + 1 << ',' << move.second + 1 << endl;
+            cout << format("Computer chooses: {}, {}\n", move.first + 1, move.second + 1);
             delete defaultBoard;
             defaultBoard = copy;
             defaultBoard->displayBoard();
             score = defaultBoard->getScores();
-            cout << "Score   Black: " << score.first << " White: " << score.second << endl;
+            cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
         }
     }
 
-    cout << "Game End\n";
+    cout << format("Game End\n");
 }
 
 int main(int argc, char **argv)

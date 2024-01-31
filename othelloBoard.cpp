@@ -36,29 +36,29 @@ void OthelloBoard::displayBoard()
     cout << "  ";
     for (int i = 1; i <= OTHELLO_BOARD_SIZE; i++)
     {
-        cout << i << ' ';
+        cout << format("{} ", i);
     }
     cout << endl;
 
     for (int i = 0; i < OTHELLO_BOARD_SIZE; i++)
     {
-        cout << i + 1 << ' ';
+        cout << format("{} ", i + 1);
         for (int j = 0; j < OTHELLO_BOARD_SIZE; j++)
         {
             if (array[i][j] == OTHELLO_WHITE)
             {
                 // White piece
-                cout << 'W' << ' ';
+                cout << format("W ");
             }
             else if (array[i][j] == OTHELLO_BLACK)
             {
                 // Black piece
-                cout << 'B' << ' ';
+                cout << format("B ");
             }
             else
             {
                 // Empty square
-                cout << '-' << ' ';
+                cout << format("- ");
             }
         }
         cout << endl;

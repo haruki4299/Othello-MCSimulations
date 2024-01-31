@@ -10,10 +10,10 @@ Move HumanPlayer::chooseMove(OthelloBoard *board)
     vector<Move> moves = board->legalMoves(color);
 
     // Print out the contents of the moves vector
-    cout << "Legal Moves: ";
+    cout << format("Legal Moves: ");
     for (const auto &move : moves)
     {
-        cout << "(" << move.first + 1 << ", " << move.second + 1 << ") ";
+        cout << format("({}, {}) ", move.first + 1, move.second + 1);
     }
     cout << endl;
 
@@ -35,7 +35,7 @@ Move HumanPlayer::chooseMove(OthelloBoard *board)
     {
         string userInput;
 
-        cout << "Enter your next move (row, column): ";
+        cout << format("Enter your next move (row, column): ");
         cin >> userInput;
 
         istringstream ss(userInput);
@@ -55,7 +55,7 @@ Move HumanPlayer::chooseMove(OthelloBoard *board)
                 }
                 else
                 {
-                    cout << "Invalid move. Please enter a legal move." << endl;
+                    cout << format("Invalid move. Please enter a legal move.\n");
                     // Clear the input buffer to handle invalid input
                     cin.clear();
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -63,7 +63,7 @@ Move HumanPlayer::chooseMove(OthelloBoard *board)
             }
             else
             {
-                cout << "Invalid input. Row and column must be integers between 1 and 8." << endl;
+                cout << format("Invalid input. Row and column must be integers between 1 and 8.\n");
                 // Clear the input buffer to handle invalid input
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -71,7 +71,7 @@ Move HumanPlayer::chooseMove(OthelloBoard *board)
         }
         else
         {
-            cout << "Invalid input. Please enter two integers separated by a comma." << endl;
+            cout << format("Invalid input. Please enter two integers separated by a comma.\n");
             // Clear the input buffer to handle invalid input
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
