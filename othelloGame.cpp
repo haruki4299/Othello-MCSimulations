@@ -171,7 +171,9 @@ void cvc(int nThreadsC1, int nSimulationsC1, int nThreadsC2, int nSimulationsC2)
     while (passes < 2) // Both players must make a move if possible so more than two passes
     {
         // First Player's Turn
+
         move = player1.chooseMove(defaultBoard, nThreadsC1, nSimulationsC1);
+        printf("HERe\n");
         if (move.first == -1)
         {
             // No moves possible PASS

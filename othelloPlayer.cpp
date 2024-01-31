@@ -144,20 +144,6 @@ int simulateToEnd(OthelloBoard *board, ComputerPlayer *origPlayer, ComputerPlaye
     return res;
 }
 
-// Worker Function for parallelization
-void workerFunction(int threadID, Move move, int start, int end, OthelloBoard *board, ComputerPlayer *origPlayer, ComputerPlayer *simPlayer, vector<int> &results)
-{
-    OthelloBoard *copy;
-
-    // Each thread has a pre determined amount of work
-    for (int i = start; i <= end; i++)
-    {
-        // Make the move in question and start the simulation
-        copy = board->makeMove(move.first, move.second, origPlayer->getColor());
-        results[threadID] += simulateToEnd(copy, origPlayer, simPlayer);
-    }
-}
-
 // Choose move function for the computer player.
 // if nSimulations is 0, the computer player makes a random move from the possible
 // Else, the computer player does n Simulations on each possible move. The move with
@@ -182,28 +168,21 @@ Move ComputerPlayer::chooseMove(OthelloBoard *board, int nThreads, int nSimulati
     // Create simulation opponenet
     ComputerPlayer *simPlayer = new ComputerPlayer("BOT", color * -1);
 
-    int movesPerThread = nSimulations / nThreads;
     vector<int> moveResults = vector<int>(moves.size(), 0);
 
     for (int index = 0; index < moves.size(); index++)
     {
-        // Create a vector to store thread objects
-        vector<thread> threads;
+        Move move = moves[index];
         vector<int> results = vector<int>(nThreads, 0);
+        OthelloBoard *copy;
+        int threadID, i;
 
-        // Spawn threads
-        for (int i = 0; i < nThreads; ++i)
+#pragma omp parallel for default(none) shared(move, results, nSimulations, board, simPlayer) private(threadID, i, copy) num_threads(nThreads) schedule(static)
+        for (i = 0; i < nSimulations; ++i)
         {
-            int start = i * movesPerThread + 1;
-            int end = (i == nThreads - 1) ? nSimulations : (i + 1) * movesPerThread;
-
-            threads.emplace_back(workerFunction, i, moves[index], start, end, board, this, simPlayer, ref(results));
-        }
-
-        // Wait for all threads to finish
-        for (auto &thread : threads)
-        {
-            thread.join();
+            threadID = omp_get_thread_num();
+            copy = board->makeMove(move.first, move.second, this->getColor());
+            results[threadID] += simulateToEnd(copy, this, simPlayer);
         }
 
         for (int i = 0; i < nThreads; i++)

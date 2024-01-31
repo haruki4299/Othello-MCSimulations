@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <format>
-#include <thread>
+#include <omp.h>
 
 #include "othelloBoard.h"
 
