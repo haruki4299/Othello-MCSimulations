@@ -63,8 +63,6 @@ namespace othelloplayer
 
         othelloboard::Move chooseMove(othelloboard::OthelloBoard *board);
         int getColor() { return color; }
-        othelloboard::Move selectRandomMove(othelloboard::OthelloBoard *board);
-        int simulateToEnd(othelloboard::OthelloBoard *board);
 
     private:
         // Player information
@@ -75,13 +73,13 @@ namespace othelloplayer
         int nThreads;
         int nSimulations;
 
-        // othelloboard::Move selectRandomMove(othelloboard::OthelloBoard *board);
+        othelloboard::Move selectRandomMove(othelloboard::OthelloBoard *board);
+        int simulateToEnd(othelloboard::OthelloBoard *board);
     };
 
     // Asks the human player for a move on the board and if legal makes the move. If not asks again.
     othelloboard::Move HumanPlayer::chooseMove(othelloboard::OthelloBoard *board)
     {
-        board->displayBoard();
         // First check if there are any legal moves
         std::vector<othelloboard::Move> moves = board->legalMoves(color);
 
@@ -298,7 +296,7 @@ namespace othelloplayer
         }
 
         // Find the results of the game
-        score = board->getScores();
+        score = copy->getScores();
         int res;
         if (score.first > score.second)
         {
