@@ -78,7 +78,7 @@ namespace othelloboard
 
         // Other Utility Functions
         void displayBoard();
-        std::shared_ptr<OthelloBoard> makeMove(int row, int col, int piece);
+        std::unique_ptr<OthelloBoard> makeMove(int row, int col, int piece);
         std::vector<Move> legalMoves(int player);
         Score getScores();
 
@@ -154,7 +154,7 @@ namespace othelloboard
     }
 
     // Make the move on the othello board
-    std::shared_ptr<OthelloBoard> OthelloBoard::makeMove(int row, int col, int piece)
+    std::unique_ptr<OthelloBoard> OthelloBoard::makeMove(int row, int col, int piece)
     {
         // A move cannot be made if a piece is already there.
         if (array[(row - 1) * constants::OTHELLO_BOARD_SIZE + (col - 1)] != constants::OTHELLO_EMPTY)
@@ -164,7 +164,7 @@ namespace othelloboard
             return nullptr;
 
         // Make a copy of the board
-        std::shared_ptr<OthelloBoard> copyBoard = std::make_shared<OthelloBoard>(*this);
+        std::unique_ptr<OthelloBoard> copyBoard = std::make_unique<OthelloBoard>(*this);
         // OthelloBoard *copyBoard = new OthelloBoard(array);
         copyBoard->array[(row - 1) * constants::OTHELLO_BOARD_SIZE + (col - 1)] = piece;
 
@@ -255,7 +255,7 @@ namespace othelloboard
         {
             for (int j = 1; j <= constants::OTHELLO_BOARD_SIZE; j++)
             {
-                std::shared_ptr<OthelloBoard> result = this->makeMove(i, j, player);
+                std::unique_ptr<OthelloBoard> result = this->makeMove(i, j, player);
                 if (result != nullptr)
                 {
                     Move move = std::make_pair(i, j);

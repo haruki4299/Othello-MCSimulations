@@ -6,12 +6,12 @@ using namespace constants;
 
 int main()
 {
-    shared_ptr<OthelloBoard> board = make_shared<OthelloBoard>();
+    unique_ptr<OthelloBoard> board = make_unique<OthelloBoard>();
     board->displayBoard();
     board = board->makeMove(3, 4, OTHELLO_BLACK);
 
     board->displayBoard();
-    shared_ptr<OthelloBoard> copy = make_shared<OthelloBoard>(*board);
+    unique_ptr<OthelloBoard> copy = make_unique<OthelloBoard>(*board);
     cout << "Copy Board\n";
     copy->displayBoard();
     board = board->makeMove(5, 3, OTHELLO_WHITE);
