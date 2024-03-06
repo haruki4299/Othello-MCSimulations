@@ -71,11 +71,8 @@ namespace othelloboard
             return *this;
         }
 
-        /*
-            No move constructor
-            - No use cases of a raw move
-            - Moves will happen with the unique ptrs
-        */
+        OthelloBoard(OthelloBoard &&other) = default;
+        void operator=(OthelloBoard &&other) noexcept { std::swap(array, other.array); }
 
         ~OthelloBoard() = default;
 
