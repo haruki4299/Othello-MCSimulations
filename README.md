@@ -8,27 +8,27 @@ In this project, I implemented a text base othello game using C++. The execution
 
 The goal of this project is to learn C++ and implement parallelism. The program supports a human playing against a computer player. When deciding how the computer player decides the next move one of the ideas I had that aligns with multithreading was the monte carlo tree search. However, a strict MCTS would not be easily implemented concurrently. In this project, for each possible move, the computer player would run independent simulations from that move and find the move that has the best result. During the simulation, the next move was chosen randomly out of all possible moves. The idea is that the best move will lead to better positions and overall the best move will have better oveall results in the simulation. To run mass simulations effeciently, the simulation was done in parallel with multiple threads. Once this was implemented, I conducted a short experiment to figure out whether this method of simulating the outcome of a game was effective in choosing a better next move.
 
-### To DO
-
-Change Implementation to c++20 compatible with best practices from class.
-
 ## How to
 
-Compile the code using C++20
+Compile the code using g++ (gcc-13) compiler and C++20
 
-`g++ -std=c++20 -o main othelloGame.cpp othelloBoard.cpp othelloPlayer.cpp`
+`g++ -std=c++20 -o main othelloGame.cpp`
 
-Once compiled, run the program as follows. Only the first argument is mandatory for the program to execute correctly.
+Once compiled, execute the program as follows. There are a few ways to execute the program:
 
-`./main <mode> <nThreads1> <nSimulations1> <nThreads2> <nSimulations2>`
+`./main`: This will default to a hvc mode with the CPU player using 1 thread to calculate 1000 simulations per move.
 
-mode = `hvc` (human (Black) vs computer (White)), `cvh` (computer (Black) vs human (White)), `cvc` (computer (Black) vs computer (White))
+`./main <mode: hvc or cvh> <nThreads1> <nSimulations1>`
+
+`./main <mode: cvc> <nThreads1> <nSimulations1> <nThreads2> <nSimulations2>`
+
+mode = `hvc` (human (Black) vs computer (White)), `cvh` (computer (Black) vs human (White)), `cvc` (computer (Black) vs computer (White)), `hvh` (human (Black) vs human (White)),
 
 nThreads1/nSimulations1 = number of threads/Simulation used by the computer player (If hvc or cvh this is the only computer player)
 
-nThreads2/nSimulations2 = for the second player (White). Only valid in the cvc mode
+nThreads2/nSimulations2 = for the second player (White). Only used in the cvc mode
 
-The default number of threads is 1 and the default number of simulations is 100. Setting the number of simulations to 0 will cause the computer player to randomly choose a move instead of running simulations.
+The default number of threads is 1 and the default number of simulations is 1000. Setting the number of simulations to 0 will cause the computer player to randomly choose a move instead of running simulations.
 
 ## Experiment
 
