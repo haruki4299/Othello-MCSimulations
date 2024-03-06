@@ -40,6 +40,7 @@ void playGame(Player1Type *player1, Player2Type *player2)
             board->displayBoard();
             score = board->getScores();
             cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
+            passes = 0;
         }
 
         if (passes == 2)
@@ -62,6 +63,7 @@ void playGame(Player1Type *player1, Player2Type *player2)
             board->displayBoard();
             score = board->getScores();
             cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
+            passes = 0;
         }
     }
 
