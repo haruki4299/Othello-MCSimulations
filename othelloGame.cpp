@@ -1,169 +1,23 @@
-#include "src/othelloBoard.h"
 #include "src/othelloPlayer.h"
 
 using namespace std;
+using namespace othelloboard;
+using namespace othelloplayer;
 using namespace constants;
 
-// Mode for Human (Black) vs. Computer (White)
-void hvc(int nThreads, int nSimulations)
+template <typename Player1Type, typename Player2Type>
+    requires Player<Player1Type> && Player<Player2Type>
+void playGame(Player1Type *player1, Player2Type *player2)
 {
-    srand(time(0));
+    srand(static_cast<unsigned int>(time(nullptr)));
 
-    // Get user name
-    string name;
-    cout << format("Enter Name: ");
-    cin >> name;
+    Score score;
 
-    // Set up initial board
-    OthelloBoard *defaultBoard = new OthelloBoard();
-    defaultBoard->displayBoard();
-    Score score = defaultBoard->getScores();
+    unique_ptr<OthelloBoard> board = make_unique<OthelloBoard>();
+    board->displayBoard();
+    score = board->getScores();
     cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
 
-    // Create both players
-    HumanPlayer player1 = HumanPlayer(name, OTHELLO_BLACK);
-    ComputerPlayer player2 = ComputerPlayer("CPU", OTHELLO_WHITE);
-    OthelloBoard *copy;
-    Move move;
-    int passes = 0;
-
-    // Start the game
-    while (passes < 2) // Both players must make a move if possible so more than two passes
-    {
-        // First player's turn
-        move = player1.chooseMove(defaultBoard);
-        if (move.first == -1)
-        {
-            // no moves possible so pass
-            passes++;
-        }
-        else
-        {
-            // Make the move
-            copy = defaultBoard->makeMove(move.first - 1, move.second - 1, OTHELLO_BLACK);
-            delete defaultBoard;
-            defaultBoard = copy;
-            defaultBoard->displayBoard();
-            score = defaultBoard->getScores();
-            cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
-        }
-
-        if (passes == 2)
-        {
-            // Two passes in a row indicate that the game can no longer be continued
-            break;
-        }
-
-        // Second player's turn
-        move = player2.chooseMove(defaultBoard, nThreads, nSimulations);
-        if (move.first == -1)
-        {
-            // no moves possible so pass
-            passes++;
-        }
-        else
-        {
-            // Make the move
-            copy = defaultBoard->makeMove(move.first, move.second, OTHELLO_WHITE);
-            cout << format("Computer chooses: {}, {}\n", move.first + 1, move.second + 1);
-            delete defaultBoard;
-            defaultBoard = copy;
-            defaultBoard->displayBoard();
-            score = defaultBoard->getScores();
-            cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
-        }
-    }
-
-    cout << "Game End\n";
-}
-
-// Mode for Computer (Black) vs. Human (White)
-void cvh(int nThreads, int nSimulations)
-{
-    srand(time(0));
-
-    // Get user name
-    string name;
-    cout << "Enter Name: ";
-    cin >> name;
-
-    // Set up initial board
-    OthelloBoard *defaultBoard = new OthelloBoard();
-    defaultBoard->displayBoard();
-    Score score = defaultBoard->getScores();
-    cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
-
-    // Create both players
-    ComputerPlayer player1 = ComputerPlayer("CPU", OTHELLO_BLACK);
-    HumanPlayer player2 = HumanPlayer(name, OTHELLO_WHITE);
-    OthelloBoard *copy;
-    Move move;
-    int passes = 0;
-
-    // Start the game
-    while (passes < 2) // Both players must make a move if possible so more than two passes
-    {
-        move = player1.chooseMove(defaultBoard, nThreads, nSimulations);
-        if (move.first == -1)
-        {
-            // no moves possible so pass
-            passes++;
-        }
-        else
-        {
-            // Make the move
-            copy = defaultBoard->makeMove(move.first, move.second, OTHELLO_BLACK);
-            cout << format("Computer chooses: {}, {}\n", move.first + 1, move.second + 1);
-            delete defaultBoard;
-            defaultBoard = copy;
-            defaultBoard->displayBoard();
-            score = defaultBoard->getScores();
-            cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
-        }
-
-        if (passes == 2)
-        {
-            // Two passes in a row indicate that the game can no longer be continued
-            break;
-        }
-
-        // Second player's turn
-        move = player2.chooseMove(defaultBoard);
-        if (move.first == -1)
-        {
-            // no moves possible so pass
-            passes++;
-        }
-        else
-        {
-            // Make the move
-            copy = defaultBoard->makeMove(move.first - 1, move.second - 1, OTHELLO_WHITE);
-            delete defaultBoard;
-            defaultBoard = copy;
-            defaultBoard->displayBoard();
-            score = defaultBoard->getScores();
-            cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
-        }
-    }
-
-    cout << "Game End\n";
-}
-
-// Mode for Computer1 (Black) vs. Computer2 (White)
-void cvc(int nThreadsC1, int nSimulationsC1, int nThreadsC2, int nSimulationsC2)
-{
-    srand(time(0));
-
-    // Set up initial board
-    OthelloBoard *defaultBoard = new OthelloBoard();
-    defaultBoard->displayBoard();
-    Score score = defaultBoard->getScores();
-    cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
-
-    // Create both players
-    ComputerPlayer player1 = ComputerPlayer("CPU1", OTHELLO_BLACK);
-    ComputerPlayer player2 = ComputerPlayer("CPU2", OTHELLO_WHITE);
-    OthelloBoard *copy;
     Move move;
     int passes = 0;
 
@@ -172,8 +26,7 @@ void cvc(int nThreadsC1, int nSimulationsC1, int nThreadsC2, int nSimulationsC2)
     {
         // First Player's Turn
 
-        move = player1.chooseMove(defaultBoard, nThreadsC1, nSimulationsC1);
-        printf("HERe\n");
+        move = player1->chooseMove(board.get());
         if (move.first == -1)
         {
             // No moves possible PASS
@@ -182,12 +35,10 @@ void cvc(int nThreadsC1, int nSimulationsC1, int nThreadsC2, int nSimulationsC2)
         else
         {
             // Make the move
-            copy = defaultBoard->makeMove(move.first, move.second, OTHELLO_BLACK);
-            cout << format("Computer chooses: {}, {}\n", move.first + 1, move.second + 1);
-            delete defaultBoard;
-            defaultBoard = copy;
-            defaultBoard->displayBoard();
-            score = defaultBoard->getScores();
+            board = board->makeMove(move.first, move.second, player1->getColor());
+            cout << format("Player1 chooses: {}, {}\n", move.first, move.second);
+            board->displayBoard();
+            score = board->getScores();
             cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
         }
 
@@ -197,7 +48,7 @@ void cvc(int nThreadsC1, int nSimulationsC1, int nThreadsC2, int nSimulationsC2)
         }
 
         // Second Player's Turn
-        move = player2.chooseMove(defaultBoard, nThreadsC2, nSimulationsC2);
+        move = player2->chooseMove(board.get());
         if (move.first == -1)
         {
             // No moves possible PASS
@@ -206,12 +57,10 @@ void cvc(int nThreadsC1, int nSimulationsC1, int nThreadsC2, int nSimulationsC2)
         else
         {
             // Make the move
-            copy = defaultBoard->makeMove(move.first, move.second, OTHELLO_WHITE);
-            cout << format("Computer chooses: {}, {}\n", move.first + 1, move.second + 1);
-            delete defaultBoard;
-            defaultBoard = copy;
-            defaultBoard->displayBoard();
-            score = defaultBoard->getScores();
+            board = board->makeMove(move.first, move.second, player2->getColor());
+            cout << format("Player2 chooses: {}, {}\n", move.first, move.second);
+            board->displayBoard();
+            score = board->getScores();
             cout << format("Score  Black: {}  White: {}\n", score.first, score.second);
         }
     }
@@ -223,66 +72,36 @@ int main(int argc, char **argv)
 {
     // Reading in command line arguments
     // Default Values Below
-    string mode = "hvc"; // hvc, cvh, cvc
+    string mode = "hvc"; // hvc (default), cvh, cvc
     int nThreadsC1 = 1;
-    int nSimulationsC1 = 100;
+    int nSimulationsC1 = 1000;
     int nThreadsC2 = 1;
-    int nSimulationsC2 = 100;
+    int nSimulationsC2 = 1000;
 
-    if (argc > 1)
+    srand(time(nullptr));
+
+    if (mode == "hvh")
     {
-        mode = argv[1];
+        Player auto player1 = HumanPlayer("Player1", OTHELLO_BLACK);
+        Player auto player2 = HumanPlayer("Player2", OTHELLO_WHITE);
+        playGame(&player1, &player2);
     }
-
-    // args for first CPU player
-    if (argc > 2)
+    else if (mode == "cvc")
     {
-        string str1{argv[2]};
-        nThreadsC1 = stoi(str1);
-    }
-
-    if (argc > 3)
-    {
-        string str2{argv[3]};
-        nSimulationsC1 = stoi(str2);
-    }
-
-    if (nSimulationsC1 < nThreadsC1)
-    {
-        // nThreads should be less than the number of simulations
-        nThreadsC1 = nSimulationsC1;
-    }
-
-    // args for second CPU player
-    if (argc > 4)
-    {
-        string str3{argv[4]};
-        nThreadsC2 = stoi(str3);
-    }
-
-    if (argc > 5)
-    {
-        string str4{argv[5]};
-        nSimulationsC2 = stoi(str4);
-    }
-
-    if (nSimulationsC2 < nThreadsC2)
-    {
-        // nThreads should be less than the number of simulations
-        nThreadsC2 = nSimulationsC2;
-    }
-
-    // Start the game
-    if (mode == "hvc")
-    {
-        hvc(nThreadsC1, nSimulationsC1);
+        Player auto player1 = ComputerPlayer("Player1", OTHELLO_BLACK, nThreadsC1, nSimulationsC1);
+        Player auto player2 = ComputerPlayer("Player2", OTHELLO_WHITE, nThreadsC2, nSimulationsC2);
+        playGame(&player1, &player2);
     }
     else if (mode == "cvh")
     {
-        cvh(nThreadsC1, nSimulationsC1);
+        Player auto player1 = ComputerPlayer("Player1", OTHELLO_BLACK, nThreadsC1, nSimulationsC1);
+        Player auto player2 = HumanPlayer("Player2", OTHELLO_WHITE);
+        playGame(&player1, &player2);
     }
     else
-    {
-        cvc(nThreadsC1, nSimulationsC1, nThreadsC2, nSimulationsC2);
+    { // "hvc"
+        Player auto player1 = HumanPlayer("Player1", OTHELLO_BLACK);
+        Player auto player2 = ComputerPlayer("Player2", OTHELLO_WHITE, nThreadsC1, nSimulationsC1);
+        playGame(&player1, &player2);
     }
 }
