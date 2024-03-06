@@ -85,7 +85,7 @@ int main(int argc, char **argv)
         nThreadsC1 = atoi(argv[2]);
         nSimulationsC1 = atoi(argv[3]);
 
-        if (nThreadsC1 <= 0 || nSimulationsC1 <= 0)
+        if (nThreadsC1 <= 0 || nSimulationsC1 < 0)
         {
             cerr << "Error: Invalid number of threads or simulations for Player 1." << endl;
             return 1;
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
         nThreadsC2 = atoi(argv[4]);
         nSimulationsC2 = atoi(argv[5]);
 
-        if (nThreadsC2 <= 0 || nSimulationsC2 <= 0)
+        if (nThreadsC2 <= 0 || nSimulationsC2 < 0)
         {
             cerr << "Error: Invalid number of threads or simulations for Player 2." << endl;
             return 1;

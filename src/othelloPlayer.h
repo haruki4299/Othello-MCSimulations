@@ -196,8 +196,6 @@ namespace othelloplayer
 
             std::vector<std::thread> threads; // Container for threads
 
-            nThreads = 4;
-
             for (int threadId = 0; threadId < nThreads; threadId++)
             {
                 threads.emplace_back([&results, &copy, threadId, this]()
