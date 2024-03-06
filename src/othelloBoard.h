@@ -169,7 +169,7 @@ namespace othelloboard
         copyBoard->array[(row - 1) * constants::OTHELLO_BOARD_SIZE + (col - 1)] = piece;
 
         // checkAndFlip flips pieces based on the move. If there are no flipped pieces, the move is not valid.
-        bool flipped = copyBoard->checkAndFlip(row - 1, col - 1, piece);
+        bool flipped = copyBoard->checkAndFlip(row, col, piece);
 
         if (flipped)
         {
@@ -196,7 +196,7 @@ namespace othelloboard
                     continue;
 
                 int count = 0;
-                std::pair<int, int> curSquare = std::make_pair(row, col);
+                std::pair<int, int> curSquare = std::make_pair(row - 1, col - 1);
 
                 // See if a flip is possible in this direction
                 // To flip we need a piece of the same color in the direction as the newly placed piece
@@ -233,7 +233,7 @@ namespace othelloboard
                 }
 
                 // Actually record the flips
-                curSquare = std::make_pair(row, col);
+                curSquare = std::make_pair(row - 1, col - 1);
                 for (int k = 0; k < count; k++)
                 {
                     curSquare.first = curSquare.first + i;
@@ -251,9 +251,9 @@ namespace othelloboard
     {
         std::vector<Move> moves;
 
-        for (int i = 0; i < constants::OTHELLO_BOARD_SIZE; i++)
+        for (int i = 1; i <= constants::OTHELLO_BOARD_SIZE; i++)
         {
-            for (int j = 0; j < constants::OTHELLO_BOARD_SIZE; j++)
+            for (int j = 1; j <= constants::OTHELLO_BOARD_SIZE; j++)
             {
                 std::shared_ptr<OthelloBoard> result = this->makeMove(i, j, player);
                 if (result != nullptr)
