@@ -10,13 +10,13 @@ The goal of this project is to learn C++ and implement parallelism. The program 
 
 ### To DO
 
-Change Implementation to c++20 compatible.
+Change Implementation to c++20 compatible with best practices from class.
 
 ## How to
 
-Compile the code using C++11
+Compile the code using C++20
 
-`g++ -std=c++11 -o main othelloGame.cpp othelloBoard.cpp othelloPlayer.cpp`
+`g++ -std=c++20 -o main othelloGame.cpp othelloBoard.cpp othelloPlayer.cpp`
 
 Once compiled, run the program as follows. Only the first argument is mandatory for the program to execute correctly.
 
