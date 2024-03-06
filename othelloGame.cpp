@@ -91,13 +91,8 @@ int main(int argc, char **argv)
             return 1;
         }
     }
-    else
-    {
-        cerr << "Usage: " << argv[0] << " mode nThreadsC1 nSimulationsC1 [nThreadsC2 nSimulationsC2]" << endl;
-        return 1;
-    }
 
-    if (argc >= 4)
+    if (argc >= 6)
     {
         nThreadsC2 = atoi(argv[4]);
         nSimulationsC2 = atoi(argv[5]);
@@ -113,24 +108,28 @@ int main(int argc, char **argv)
 
     if (mode == "hvh")
     {
+        cout << format("Human versus Human Mode\n");
         Player auto player1 = HumanPlayer("Player1", OTHELLO_BLACK);
         Player auto player2 = HumanPlayer("Player2", OTHELLO_WHITE);
         playGame(&player1, &player2);
     }
     else if (mode == "cvc")
     {
+        cout << format("Computer versus Computer Mode\n");
         Player auto player1 = ComputerPlayer("Player1", OTHELLO_BLACK, nThreadsC1, nSimulationsC1);
         Player auto player2 = ComputerPlayer("Player2", OTHELLO_WHITE, nThreadsC2, nSimulationsC2);
         playGame(&player1, &player2);
     }
     else if (mode == "cvh")
     {
+        cout << format("Computer versus Human Mode\n");
         Player auto player1 = ComputerPlayer("Player1", OTHELLO_BLACK, nThreadsC1, nSimulationsC1);
         Player auto player2 = HumanPlayer("Player2", OTHELLO_WHITE);
         playGame(&player1, &player2);
     }
     else
     { // "hvc"
+        cout << format("Human versus Computer Mode\n");
         Player auto player1 = HumanPlayer("Player1", OTHELLO_BLACK);
         Player auto player2 = ComputerPlayer("Player2", OTHELLO_WHITE, nThreadsC1, nSimulationsC1);
         playGame(&player1, &player2);
