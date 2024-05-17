@@ -81,6 +81,10 @@ namespace othelloboard
         std::unique_ptr<OthelloBoard> makeMove(int row, int col, int piece);
         std::vector<Move> legalMoves(int player);
         Score getScores();
+        int getSquare(int row, int col)
+        {
+            return array[(row - 1) * constants::OTHELLO_BOARD_SIZE + col - 1];
+        }
 
     private:
         std::array<int, constants::OTHELLO_BOARD_SIZE * constants::OTHELLO_BOARD_SIZE> array;

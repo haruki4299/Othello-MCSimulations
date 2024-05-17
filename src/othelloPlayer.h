@@ -9,7 +9,9 @@
 #include <algorithm>
 #include <format>
 #include <thread>
+#include <climits>
 #include <concepts>
+#include <future>
 
 #include "othelloBoard.h"
 
@@ -47,19 +49,19 @@ namespace othelloplayer
         int color;
     };
 
-    class ComputerPlayer
+    class ComputerPlayerMC
     {
     public:
         // Constructors
-        ComputerPlayer(std::string playerName, int playerColor, int num_theads, int num_simulations)
+        ComputerPlayerMC(std::string playerName, int playerColor, int num_theads, int num_simulations)
         {
             name = playerName;
             color = playerColor;
             nThreads = num_theads;
             nSimulations = num_simulations;
         }
-        ComputerPlayer(const ComputerPlayer &) = delete; // Delete copy constructor
-        ComputerPlayer(ComputerPlayer &&) = delete;      // Delete move constructor
+        ComputerPlayerMC(const ComputerPlayerMC &) = delete; // Delete copy constructor
+        ComputerPlayerMC(ComputerPlayerMC &&) = delete;      // Delete move constructor
 
         othelloboard::Move chooseMove(othelloboard::OthelloBoard *board);
         int getColor() { return color; }
@@ -76,6 +78,212 @@ namespace othelloplayer
         othelloboard::Move selectRandomMove(othelloboard::OthelloBoard *board);
         int simulateToEnd(othelloboard::OthelloBoard *board);
     };
+
+    template <typename HF>
+    class ComputerPlayerMM //<H, std::void_t<std::is_function<H>>>
+    {
+    public:
+        // Constructors
+        ComputerPlayerMM(std::string playerName, int playerColor, int plies, const HF &function)
+        {
+            name = playerName;
+            color = playerColor;
+            maxNumPlies = plies;
+            heuristic = function;
+        }
+        ComputerPlayerMM(const ComputerPlayerMC &) = delete; // Delete copy constructor
+        ComputerPlayerMM(ComputerPlayerMC &&) = delete;      // Delete move constructor
+
+        othelloboard::Move chooseMove(othelloboard::OthelloBoard *board);
+        int getColor() { return color; }
+
+    private:
+        //  Player information
+        std::string name;
+        int color;
+
+        int maxNumPlies;
+        HF heuristic;
+
+        std::tuple<int, int, int> minimize(othelloboard::OthelloBoard *board, int plies, int alpha, int beta);
+        std::tuple<int, int, int> maximize(othelloboard::OthelloBoard *board, int plies, int alpha, int beta);
+        // int heuristic(othelloboard::OthelloBoard *board);
+    };
+
+    template <typename HF>
+    std::tuple<int, int, int> ComputerPlayerMM<HF>::minimize(othelloboard::OthelloBoard *board, int plies, int alpha, int beta)
+    {
+        if (plies == 0)
+        {
+            int heuristicValue = heuristic(board);
+            return std::make_tuple(heuristicValue, -1, -1);
+        }
+        else
+        {
+            int best = INT_MAX;
+            othelloboard::Move bestMove = std::make_pair(-1, -1);
+            std::vector<othelloboard::Move> moves = board->legalMoves(constants::OTHELLO_BLACK);
+            if (moves.empty())
+            {
+                int heuristicValue = heuristic(board);
+                return std::make_tuple(heuristicValue, bestMove.first, bestMove.second);
+            }
+            plies--;
+            if (plies == maxNumPlies - 1)
+            {
+                std::vector<std::promise<std::tuple<int, int, int>>> promises(moves.size());
+                std::vector<std::future<std::tuple<int, int, int>>> futures;
+                for (auto &promise : promises)
+                {
+                    futures.push_back(promise.get_future());
+                }
+
+                for (size_t i = 0; i < moves.size(); ++i)
+                {
+                    std::thread([this, board, move = moves[i], plies, alpha, beta, &promise = promises[i]]()
+                                {
+                std::unique_ptr<othelloboard::OthelloBoard> copy = board->makeMove(move.first, move.second, constants::OTHELLO_BLACK);
+                auto result = maximize(copy.get(), plies, alpha, beta);
+                promise.set_value(result); })
+                        .detach();
+                }
+
+                for (size_t i = 0; i < futures.size(); ++i)
+                {
+                    auto result = futures[i].get();
+                    int newBest = std::min(best, std::get<0>(result));
+                    if (newBest != best)
+                    {
+                        bestMove = moves[i];
+                        best = newBest;
+                    }
+                    if (best <= alpha)
+                    {
+                        break;
+                    }
+                    beta = std::min(beta, best);
+                }
+
+                return std::make_tuple(best, bestMove.first, bestMove.second);
+            }
+            else
+            {
+                for (auto move : moves)
+                {
+                    std::unique_ptr<othelloboard::OthelloBoard> copy = board->makeMove(move.first, move.second, constants::OTHELLO_BLACK);
+                    int newBest = std::min(best, std::get<0>(maximize(copy.get(), plies, alpha, beta)));
+                    if (newBest != best)
+                    {
+                        bestMove = move;
+                        best = newBest;
+                    }
+                    if (best <= alpha)
+                    {
+                        break;
+                    }
+                    beta = std::min(beta, best);
+                }
+                return std::make_tuple(best, bestMove.first, bestMove.second);
+            }
+        }
+    }
+
+    template <typename HF>
+    std::tuple<int, int, int> ComputerPlayerMM<HF>::maximize(othelloboard::OthelloBoard *board, int plies, int alpha, int beta)
+    {
+        if (plies == 0)
+        {
+            int heuristicValue = heuristic(board);
+            return std::make_tuple(heuristicValue, -1, -1);
+        }
+        else
+        {
+            int best = INT_MIN;
+            othelloboard::Move bestMove = std::make_pair(-1, -1);
+            std::vector<othelloboard::Move> moves = board->legalMoves(constants::OTHELLO_WHITE);
+            if (moves.empty())
+            {
+                int heuristicValue = heuristic(board);
+                return std::make_tuple(heuristicValue, bestMove.first, bestMove.second);
+            }
+            plies--;
+            if (plies == maxNumPlies - 1)
+            {
+                std::vector<std::promise<std::tuple<int, int, int>>> promises(moves.size());
+                std::vector<std::future<std::tuple<int, int, int>>> futures;
+                for (auto &promise : promises)
+                {
+                    futures.push_back(promise.get_future());
+                }
+
+                for (size_t i = 0; i < moves.size(); ++i)
+                {
+                    std::thread([this, board, move = moves[i], plies, alpha, beta, &promise = promises[i]]()
+                                {
+                std::unique_ptr<othelloboard::OthelloBoard> copy = board->makeMove(move.first, move.second, constants::OTHELLO_WHITE);
+                auto result = minimize(copy.get(), plies, alpha, beta);
+                promise.set_value(result); })
+                        .detach();
+                }
+
+                for (size_t i = 0; i < futures.size(); ++i)
+                {
+                    auto result = futures[i].get();
+                    int newBest = std::max(best, std::get<0>(result));
+                    if (newBest != best)
+                    {
+                        bestMove = moves[i];
+                        best = newBest;
+                    }
+                    if (best >= beta)
+                    {
+                        break;
+                    }
+                    alpha = std::max(alpha, best);
+                }
+
+                return std::make_tuple(best, bestMove.first, bestMove.second);
+            }
+            else
+            {
+                for (auto move : moves)
+                {
+                    std::unique_ptr<othelloboard::OthelloBoard> copy = board->makeMove(move.first, move.second, constants::OTHELLO_WHITE);
+                    int newBest = std::max(best, std::get<0>(minimize(copy.get(), plies, alpha, beta)));
+                    if (newBest != best)
+                    {
+                        bestMove = move;
+                        best = newBest;
+                    }
+                    if (best >= beta)
+                    {
+                        break;
+                    }
+                    alpha = std::max(alpha, best);
+                }
+                return std::make_tuple(best, bestMove.first, bestMove.second);
+            }
+        }
+    }
+
+    template <typename HF>
+    othelloboard::Move ComputerPlayerMM<HF>::chooseMove(othelloboard::OthelloBoard *board)
+    {
+        int alpha = INT_MIN;
+        int beta = INT_MAX;
+
+        std::tuple<int, int, int> result;
+        if (color == 1)
+        {
+            result = maximize(board, maxNumPlies, alpha, beta);
+        }
+        else
+        {
+            result = minimize(board, maxNumPlies, alpha, beta);
+        }
+        othelloboard::Move move = std::make_pair(std::get<1>(result), std::get<2>(result));
+        return move;
+    }
 
     // Asks the human player for a move on the board and if legal makes the move. If not asks again.
     othelloboard::Move HumanPlayer::chooseMove(othelloboard::OthelloBoard *board)
@@ -159,7 +367,7 @@ namespace othelloplayer
     // if nSimulations is 0, the computer player makes a random move from the possible
     // Else, the computer player does n Simulations on each possible move. The move with
     // the best results from these simulations is chosen as the best possible move.
-    othelloboard::Move ComputerPlayer::chooseMove(othelloboard::OthelloBoard *board)
+    othelloboard::Move ComputerPlayerMC::chooseMove(othelloboard::OthelloBoard *board)
     {
         // If the number of simulations is 0 then just do a random move selection
         if (nSimulations == 0)
@@ -235,7 +443,7 @@ namespace othelloplayer
     }
 
     // Computer Player selects a random move from possible moves
-    othelloboard::Move ComputerPlayer::selectRandomMove(othelloboard::OthelloBoard *board)
+    othelloboard::Move ComputerPlayerMC::selectRandomMove(othelloboard::OthelloBoard *board)
     {
         std::vector<othelloboard::Move> moves = board->legalMoves(color);
 
@@ -257,9 +465,9 @@ namespace othelloplayer
 
     // Simulate the game from the board. The simulation always starts from the sim player.
     // OrigPlayer represents the CPU which is trying to make the current move.
-    int ComputerPlayer::simulateToEnd(othelloboard::OthelloBoard *board)
+    int ComputerPlayerMC::simulateToEnd(othelloboard::OthelloBoard *board)
     {
-        Player auto simPlayer = ComputerPlayer("BOT", this->getColor() * -1, 1, 1);
+        Player auto simPlayer = ComputerPlayerMC("BOT", this->getColor() * -1, 1, 1);
         std::unique_ptr<othelloboard::OthelloBoard> copy = std::make_unique<othelloboard::OthelloBoard>(*board);
         othelloboard::Move move;
         othelloboard::Score score;
